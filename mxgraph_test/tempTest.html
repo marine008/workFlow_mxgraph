@@ -1,0 +1,89 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title></title>
+    <script type="text/javascript" src="src/js/mxclient-ff.js"></script>
+    <script type="text/javascript">
+        var graph;
+
+        function onLoad(){
+            var container = document.getElementById('mygraph');
+            graph = new mxGraph(container);
+            graph.setConnectable(true);
+            graph.setDropEnabled(true); //可拖拽
+            var parent = graph.getDefaultParent();
+            // Adds cells to the model in a single step
+            graph.getModel().beginUpdate();
+            try
+            {
+                var v1 = graph.insertVertex(parent, null, 'Hello,', 20, 20, 80, 30);
+                var v2 = graph.insertVertex(parent, null, 'World!', 200, 150, 80, 30);
+                var v3 = graph.insertVertex(parent, null, 'Hello,', 400, 300, 80, 30);
+                var v4 = graph.insertVertex(parent, null, 'Hello,', 600, 450, 80, 30);
+                var v5 = graph.insertVertex(parent, null, 'Hello,', 800, 600, 80, 30);
+                var e1 = graph.insertEdge(parent, null, '', v1, v2);
+            }
+            catch(e){
+                alert("错误："+e);
+            }
+            finally
+            {
+                // Updates the display
+                graph.getModel().endUpdate();
+            }
+
+            /*var oldCreateEdge = graph.createEdge;
+            graph.createEdge = function(parent, id, value, source, target, style){
+                var doc = mxUtils.createXmlDocument();
+
+                var node = doc.createElement("UserEdage");
+                node.setAttribute("sn", "");
+                node.setAttribute("name", "开始");
+                node.setAttribute("flowsn", "");
+                node.setAttribute("nodetype", "begin");
+                node.setAttribute("nodeovertime", "");
+                node.setAttribute("description", "开始");
+                node.setAttribute("userids", "");
+                node.setAttribute("roleids", "");
+                node.setAttribute("isauto", "false");
+                node.setAttribute("application", "");
+                node.setAttribute("extraproperty", "");
+                node.setAttribute("remark", "");
+
+                //debugger;
+                value = node;
+                id = null;
+                //alert(arguments);
+                oldCreateEdge.apply(this, arguments);
+            }*/
+
+            var oldCreateEdge = mxConnectionHandler.prototype.insertEdge;
+            mxConnectionHandler.prototype.insertEdge = function(parent, id, value, source, target){
+                var doc = mxUtils.createXmlDocument();
+
+                var node = doc.createElement("UserEdage");
+                node.setAttribute("sn", "");
+                node.setAttribute("name", "1111111");
+                node.setAttribute("flowsn", "");
+                node.setAttribute("nodetype", "begin");
+                node.setAttribute("nodeovertime", "");
+                node.setAttribute("description", "2323232");
+                node.setAttribute("userids", "");
+                node.setAttribute("roleids", "");
+                node.setAttribute("isauto", "false");
+                node.setAttribute("application", "");
+                node.setAttribute("extraproperty", "");
+                node.setAttribute("remark", "");
+
+                value = node;
+                oldCreateEdge.apply(this, arguments);
+            }
+        }
+
+    </script>
+</head>
+<body onload="onLoad();">
+    <div id="mygraph" style="height: 600px; width: 800px"></div>
+</body>
+</html>

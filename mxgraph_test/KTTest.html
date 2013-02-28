@@ -1,0 +1,150 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <!--<script src="src/js/mxClient.js" type="text/javascript"></script>-->
+    <link href="jquery/themes/default/easyui.css" rel="stylesheet" type="text/css">
+    <script type="text/javascript" src="jquery/jquery-1.4.4.min.js"></script>
+    <script type="text/javascript" src="jquery/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="save/mxClient.js"></script>
+    <script src="js/kingtop/KTGraph.js" type="text/javascript"></script>
+    <script type="text/javascript" src="js/kingtop/KTSidebar.js"></script>
+    <script type="text/javascript" src="js/kingtop/KTUserObject.js"></script>
+    <script type="text/javascript" src="js/kingtop/KTContextMenu.js"></script>
+    <script type="text/javascript" src="js/kingtop/KTGuid.js"></script>
+    <script type="text/javascript" src="js/kingtop/KTPropertygrid.js"></script>
+    <script type="text/javascript" src="js/kingtop/KTGraphPermission.js"></script>
+    <script type="text/javascript" src="js/kingtop/KTUserObjPermission.js"></script>
+    <script type="text/javascript" src="js/kingtop/KTPropertyForm.js"></script>
+    <script type="text/javascript" src="js/kingtop/KTEditorUI.js"></script>
+    <!--<script type="text/javascript" src="www/js/Graph.js"/>-->
+    <script type="text/javascript">
+        var graph;
+        function onLoad(){
+            var container = document.getElementById("mygraph");
+            graph =new KTGraph(container);
+            var permission = new KTGraphPermission(graph);
+            //permission.Init();
+            var context = new KTContextMenu(graph);
+
+            initSlider();
+
+            //mxLog.show();
+
+            /*var parent = graph.getDefaultParent();
+            // Adds cells to the model in a single step
+            graph.getModel().beginUpdate();
+            try
+            {
+                var v1 = graph.insertVertex(parent, null, 'Hello,', 20, 20, 80, 30);
+                var v2 = graph.insertVertex(parent, null, 'World!', 200, 150, 80, 30);
+                var v3 = graph.insertVertex(parent, null, 'Hello,', 400, 300, 80, 30);
+                var v4 = graph.insertVertex(parent, null, 'Hello,', 600, 450, 80, 30);
+                var v5 = graph.insertVertex(parent, null, 'Hello,', 800, 600, 80, 30);
+                var e1 = graph.insertEdge(parent, null, '', v1, v2);
+            }
+            catch(e){
+                alert("错误："+e);
+            }
+            finally
+            {
+                // Updates the display
+                graph.getModel().endUpdate();
+            }
+
+             //initSlider();*/
+        }
+
+        function initSlider(){
+            var container = document.getElementById("myslider");
+            var slider = new KTSidebar(container, graph);
+
+            var userObj = new KTUserObject(slider);
+            userObj.init();
+
+            var container = document.getElementById('myPropertygrid');
+            var propertygrid = new KTPropertygrid(container, graph);
+            var oldTransfer = propertygrid.transfer;
+            propertygrid.transfer = function(nodeName){
+                return userObj.transferToChinese(nodeName);
+            };
+            propertygrid.Init();
+        }
+
+        function onLoad2(){
+            var editUI = new KTEditorUI();
+
+        }
+
+        function loadxml(){
+            var xml = '<mxGraphModel grid="1" guides="1" tooltips="1" connect="1" fold="1" page="0" pageScale="1" pageWidth="826" pageHeight="1169">'+
+                    '<root>'+
+                    '<mxCell id="0"/>'+
+                    '<mxCell id="1" parent="0"/>'+
+                    '<mxCell id="2" value="" style="ellipse" vertex="1" parent="1">'+
+                    '<mxGeometry x="150" y="120" width="80" height="80" as="geometry"/>'+
+                    '</mxCell>'+
+                    '<mxCell id="3" value="" style="ellipse;shape=doubleEllipse" vertex="1" parent="1">'+
+                    '<mxGeometry x="320" y="150" width="80" height="80" as="geometry"/>'+
+                    '</mxCell>'+
+                    '<mxCell id="4" edge="1" parent="1" source="2" target="3">'+
+                    '<mxGeometry relative="1" as="geometry"/>'+
+                    '</mxCell>'+
+                    '</root>'+
+            '</mxGraphModel>';
+
+            graph.loadFromXml(xml);
+        }
+
+        function exportToXml(){
+            var xml = graph.exportToXml();
+            alert(xml);
+        }
+
+        function updateCell(){
+            var cell = graph.findCell('sn','000000000002');
+            graph.updateCell(cell);
+
+            graph.scrollCellToVisible(cell, true);
+        }
+
+        function readFile(fileArray){
+            for(var i in fileArray){
+                var file = fileArray[i]; //这个file对象有以下属性可供读取name、size、lastModifiedDate和type等。
+                var reader = new FileReader();
+                reader.onload = function(e) { //读取结束后触发onload事件
+                    var xml = e.target.result;
+                    graph.loadFromXml(xml);
+                };
+                reader.readAsText(file);//readAsText函数用于将文件读取为文本
+            }
+        }
+
+        function uploadXml(){
+            var xml = graph.exportToXml();
+            xml = encodeURIComponent(xml);
+            try
+            {
+                new mxXmlRequest("http://localhost:4752/services/flow/FlowXmlResolve.ashx", 'name=' + 'mytest2012111601' + '&xml=' + xml).simulate(document, "_blank");
+            }
+            catch(e){}
+            finally{
+                alert("OK");
+            }
+        }
+
+    </script>
+</head>
+<body onload="onLoad();">
+    <input type="button" value="Import" onclick="loadxml();"/>
+    <input type="file" value="Open" onchange="readFile(this.files)"/>
+    <input type="button" value="Export" onclick="exportToXml();"/>
+    <input type="button" value="Update" onclick="updateCell();"/>
+    <input type="button" value="Slider" onclick="initSlider();"/>
+    <input type="button" value="Upload" onclick="uploadXml();"/>
+    <div id='myslider' style="height: 200px; width: 500px; background: #8C8C8C; position: absolute; left: 820px;"></div>
+    <div id='mygraph' style="position: absolute; left: 5px; background:#eeeeee;border:6px solid gray;overflow:hidden; width:800px;height:600px;"></div>
+    <div id='myPropertygrid' style="position: absolute; left:815px; top: 220px; height: auto; width: 500px; background: #e5e5e5; position: relative;"></div>
+</body>
+</html>

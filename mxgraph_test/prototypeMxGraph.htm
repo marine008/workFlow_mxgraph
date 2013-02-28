@@ -1,0 +1,39 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <script src="src/js/mxClient.js" type="text/javascript"></script>
+    <script src="js/kingtop/kingtopGraphToolbar.js" type="text/javascript"></script>
+    <script src="js/kingtop/kingtopGraphFlow.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        var graph;
+
+        function onLoad() {
+            graph = new kingtopGraphFlow("mygraph");
+
+            var toolbar = new kingtopGraphToolbar(graph, "mytoolbar");
+            toolbar.AddVertext("src/images/rectangle.gif", 100, 40, '');
+            toolbar.AddVertext("src/images/rounded.gif", 100, 40, 'shape=rounded');
+            toolbar.AddVertext("src/images/rhombus.gif", 40, 40, 'shape=rhombus');
+            toolbar.AddVertext("src/images/triangle.gif", 40, 40, 'shape=triangle');
+
+            var tb = document.createElement("div");
+            var wnd = new mxWindow("Title", tb, 100, 100, 200, 200, true, true);
+            wnd.setVisible(true);
+        };
+
+        function exportTo() {
+            var enc = new mxCodec();
+            var node = enc.encode(graph.getModel());
+            alert(mxUtils.getPrettyXml(node));
+        };
+    </script>
+</head>
+<body onload="onLoad();">
+    <input type="button" value="保存" onclick="exportTo();" />
+    <div id="mygraph" style="position: absolute; overflow: hidden; border: 6px solid gray;
+        height: 500px; width: 500px; background-image: url('src/images/grid.gif')" />
+    <div id="mytoolbar" style="position: absolute; border: 1px solid black; height: 24px;
+        width: 498px; background-color: gray;" />
+</body>
+</html>

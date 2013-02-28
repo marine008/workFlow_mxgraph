@@ -1,0 +1,26 @@
+﻿div.KTmenu
+{
+    position: relative;
+    float: right;
+    top: 20px;
+    background: #C9EDCC;
+    padding: 5px;
+    height: 25px;
+    width: 600px;
+}
+
+div.Graph
+{
+    height: 100%;
+    width: 100%;
+    background-image: url("./src/images/grid.gif");
+}
+
+div.toolBar
+{
+    position: relative;
+    top: 0px;
+    width: 100%;
+    height: 30px;
+    background-color: #DEF2FF;
+}

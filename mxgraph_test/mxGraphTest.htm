@@ -1,0 +1,142 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>my mxgraph</title>
+    <!--<script src="src/js/mxclient-ie.js" type="text/javascript"></script>-->
+    <script src="src/js/mxClient.js" type="text/javascript"></script>
+    <script type="text/javascript">
+
+        function onLoad() {
+            CreateDefaultPanel('', '');
+        }
+
+        function CreateDefaultPanel(a, b) {
+            var tbContainer = document.createElement('div');
+            tbContainer.style.position = 'absolute';
+            tbContainer.style.overflow = 'hidden';
+            tbContainer.style.padding = '2px';
+            tbContainer.style.left = '0px';
+            tbContainer.style.top = '0px';
+            tbContainer.style.width = '24px';
+            tbContainer.style.bottom = '0px';
+
+            document.body.appendChild(tbContainer);
+
+            if (mxClient.IS_IE) {
+                new mxDivResizer(tbContainer);
+            }
+            //启用toolbar工具条
+            var toolbar = new mxToolbar(tbContainer);
+            toolbar.enabled = false;
+
+            var container = document.createElement('div');
+            container.style.position = 'absolute';
+            container.style.overflow = 'hidden';
+            container.style.left = '24px';
+            container.style.top = '0px';
+            container.style.right = '0px';
+            container.style.bottom = '0px';
+            container.style.background = 'url("src/images/grid.gif")';
+
+            document.body.appendChild(container);
+
+            if (mxClient.IS_IE) {
+                new mxDivResizer(container);
+            }
+
+            //初始化图形对象
+            //var graph = new mxGraph(container);
+            var model = new mxGraphModel();
+            var graph = new mxGraph(container, model);
+
+            var kk = graph.getModel().remove(
+
+            //可以连接
+            graph.setConnectable(true);
+            graph.setMultigraph(false);
+
+            var style = graph.getStylesheet().getDefaultEdgeStyle();
+            style[mxConstants.STYLE_ROUNDED] = true;
+            style[mxConstants.STYLE_EDGE] = mxEdgeStyle.ElbowConnector;
+            var keyHandler = new mxKeyHandler(graph);
+            var rubberband = new mxRubberband(graph);
+
+            //设置图像可以拖动
+            //            graph.panningHandler.useLeftButtonForPanning = true;
+            //            graph.container.style.cursor = 'hand';
+            //            graph.setPanning(true);
+            mxConnectionHandler.prototype.connectImage = new mxImage('src/images/green-dot.gif', 12, 12);
+
+            var addVertex = function (icon, w, h, style) {
+                var vertex = new mxCell(null, new mxGeometry(0, 0, w, h), style);
+                vertex.setVertex(true);
+
+                var img = AddToolbarItem(graph, toolbar, vertex, icon);
+                img.enabled = true;
+
+                graph.getSelectionModel().addListener(mxEvent.CHANGE, function () {
+                    var tmp = graph.isSelectionEmpty();
+                    mxUtils.setOpacity(img, (tmp) ? 100 : 20);
+                    img.enabled = tmp;
+                });
+            }
+
+            addVertex("src/images/rectangle.gif", 100, 40, '');
+            addVertex("src/images/rounded.gif", 100, 40, 'shape=rounded');
+            addVertex("src/images/rhombus.gif", 40, 40, 'shape=rhombus');
+            addVertex("src/images/triangle.gif", 40, 40, 'shape=triangle');
+            //            var node = graph.getDefaultParent();
+            //            var style = graph.getStylesheet().getDefaultVertexStyle();
+            //            var edgeStyle = graph.getStylesheet().getDefaultEdgeStyle();
+            //            graph.getModel().beginUpdate();
+
+            //            try {
+            //                var v1 = graph.insertVertex(node, null, 'hello', 20, 20, 80, 20, style, false);
+            //                var v2 = graph.insertVertex(node, null, 'world', 60, 80, 80, 20, style, false);
+            //                graph.insertEdge(node, null, '连接', v1, v2);
+            //            }
+            //            finally {
+            //                graph.getModel().endUpdate();
+            //            }
+        }
+
+        function AddToolbarItem(graph, toolbar, prototype, image) {
+            var funct = function (graph, evt, cell, x, y) {
+                graph.stopEditing(false);
+
+                var vertex = graph.getModel().cloneCell(prototype);
+                vertex.geometry.x = x;
+                vertex.geometry.y = y;
+
+                graph.addCell(vertex);
+                graph.setSelectionCell(vertex);
+            }
+
+            var img = toolbar.addMode(null, image, function (evt, cell) {
+                var pt = this.graph.getPointForEvent(evt);
+                funct(graph, evt, cell, pt.x, pt.y);
+            });
+
+            mxEvent.addListener(img, 'mousedown', function (evt) {
+                // do nothing
+            });
+
+            mxEvent.addListener(img, 'mousedown', function (evt) {
+                if (img.enabled == false) {
+                    mxEvent.consume(evt);
+                }
+            });
+
+            mxUtils.makeDraggable(img, graph, funct);
+
+            return img;
+        }
+    </script>
+</head>
+<body onload="onLoad();">
+    <!--<div id="myGraph" style="position: relative; overflow: hidden; border: 6px solid gray;
+        height: 500px; width: 500px; background-image: url('src/images/grid.gif')" />-->
+    <!--<div id="myToolbar" style="position: relative; border: 1px solid black; height: 24px;
+        width: 498px; background-color: gray;" />-->
+</body>
+</html>
